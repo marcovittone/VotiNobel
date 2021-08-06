@@ -12,9 +12,9 @@ public class Model {
 	
 	EsameDAO e;
 	int numeroCrediti;
+	List<Esame> tuttiEsami;
 	Set <Esame> migliori;
 	double mediaMigliore;
-	int numeroTotEsami;
 
 	
 	public Model() {
@@ -28,20 +28,24 @@ public class Model {
 		this.numeroCrediti=numeroCrediti;
 		this.mediaMigliore=0;
 		this.migliori = new HashSet<Esame>();
-		List<Esame> esami = this.e.getTuttiEsami();
-		this.numeroTotEsami= esami.size();
-		ricorsione(new HashSet<Esame>(),esami,0);	
+		this.tuttiEsami = this.e.getTuttiEsami();
+		ricorsione(new HashSet<Esame>(),0);	
 		return this.migliori;	
 	}
 	
 	
-	private void ricorsione(Set<Esame> parziale,List<Esame> esami, int livello) {
+	private void ricorsione(Set<Esame> parziale, int livello) {
 		
 		
-		for(int i=0;i<esami.size();i++)
+		for(int i=0;i<this.tuttiEsami.size();i++)
 			{
-					Esame e = esami.get(i);
-						if(sommaCrediti(parziale)+e.getCrediti()>this.numeroCrediti || livello == esami.size())
+				//Esame e = this.tuttiEsami.get(i);
+			
+				System.out.println(parziale.contains(this.tuttiEsami.get(i)));
+				
+				if(!parziale.contains(this.tuttiEsami.get(i))); //immediate
+				{
+						if(sommaCrediti(parziale)+this.tuttiEsami.get(i).getCrediti()>this.numeroCrediti || livello == this.tuttiEsami.size())
 						{
 							double temp= this.calcolaMedia(parziale);
 							
@@ -54,12 +58,11 @@ public class Model {
 						}
 					
 					else{
-							parziale.add(e); //immediate
-							esami.remove(i); //slugghish
-							ricorsione(parziale,esami,livello+1);
-							parziale.remove(e);  //immediate
-							esami.add(i, e); 
+							parziale.add(this.tuttiEsami.get(i)); //immediate
+							ricorsione(parziale,livello+1);
+							parziale.remove(this.tuttiEsami.get(i));  //immediate
 						}
+				}
 					
 			}
 		}
