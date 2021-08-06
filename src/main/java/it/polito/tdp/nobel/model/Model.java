@@ -76,7 +76,7 @@ public class Model {
 	 */
 	private void cerca1(Set<Esame> parziale, int L, int m) {
 		casiTestati ++;
-		System.out.println("L = " + L + "\t" + parziale);
+//		System.out.println("L = " + L + "\t" + parziale);
 
 		//casi terminali
 		int crediti = sommaCrediti(parziale);
