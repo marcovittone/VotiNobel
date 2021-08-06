@@ -29,6 +29,7 @@ public class Model {
 		this.mediaMigliore=0;
 		this.migliori = new HashSet<Esame>();
 		this.tuttiEsami = this.e.getTuttiEsami();
+		
 		ricorsione(new HashSet<Esame>(),0);	
 		return this.migliori;	
 	}
@@ -39,13 +40,11 @@ public class Model {
 		
 		for(int i=0;i<this.tuttiEsami.size();i++)
 			{
-				//Esame e = this.tuttiEsami.get(i);
-			
-				System.out.println(parziale.contains(this.tuttiEsami.get(i)));
+				Esame e = this.tuttiEsami.get(i);
 				
-				if(!parziale.contains(this.tuttiEsami.get(i))); //immediate
+				if(!parziale.contains(e)) //immediate
 				{
-						if(sommaCrediti(parziale)+this.tuttiEsami.get(i).getCrediti()>this.numeroCrediti || livello == this.tuttiEsami.size())
+						if(sommaCrediti(parziale)+e.getCrediti()>this.numeroCrediti || livello == this.tuttiEsami.size())
 						{
 							double temp= this.calcolaMedia(parziale);
 							
