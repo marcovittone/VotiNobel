@@ -14,6 +14,7 @@ public class Model {
 	int numeroCrediti;
 	Set <Esame> migliori;
 	double mediaMigliore;
+	int numeroTotEsami;
 
 	
 	public Model() {
@@ -27,7 +28,9 @@ public class Model {
 		this.numeroCrediti=numeroCrediti;
 		this.mediaMigliore=0;
 		this.migliori = new HashSet<Esame>();
-		ricorsione(new HashSet<Esame>(),this.e.getTuttiEsami(),0);	
+		List<Esame> esami = this.e.getTuttiEsami();
+		this.numeroTotEsami= esami.size();
+		ricorsione(new HashSet<Esame>(),esami,0);	
 		return this.migliori;	
 	}
 	
@@ -38,7 +41,7 @@ public class Model {
 		for(int i=0;i<esami.size();i++)
 			{
 					Esame e = esami.get(i);
-						if(sommaCrediti(parziale)+e.getCrediti()>this.numeroCrediti)
+						if(sommaCrediti(parziale)+e.getCrediti()>this.numeroCrediti || livello == esami.size())
 						{
 							double temp= this.calcolaMedia(parziale);
 							
