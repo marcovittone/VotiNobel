@@ -2,146 +2,71 @@ package it.polito.tdp.nobel.model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import it.polito.tdp.nobel.db.EsameDAO;
 
 public class Model {
-	private List<Esame> partenza;
-	private List<Esame> soluzioneMigliore;
-	private double mediaSoluzioneMigliore;
-	private int casiTestati = 0;
+	
+	
+	EsameDAO e;
+	int numeroCrediti;
+	Set <Esame> migliori;
+	double mediaMigliore;
+
 	
 	public Model() {
-		EsameDAO dao = new EsameDAO();
-		this.partenza = dao.getTuttiEsami();
-	}
-	
-	public List<Esame> calcolaSottoinsiemeEsami(int numeroCrediti) {
-		List<Esame> parziale = new ArrayList<Esame>();
-		soluzioneMigliore = new ArrayList<Esame>();
-		mediaSoluzioneMigliore = 0;
-		casiTestati = 0;
-		cerca1(parziale, 0, numeroCrediti);
-		//cerca2(parziale, 0, numeroCrediti);
-		return soluzioneMigliore;
+		this.e = new EsameDAO();
+		
 	}
 
-	/*
-	 * APPROCCIO 2
-	 * Genero i sottoinsiemi di PARTENZA 1 caso per volta
-	 * 		- decido, esame per esame, se debba/non debba far parte della soluzione. 
-	 */
-	private void cerca2(List<Esame> parziale, int L, int m) {
-		casiTestati ++;
-		
-		//casi terminali
-		int crediti = sommaCrediti(parziale);
-		if(crediti > m) {
-			return;
-		}
-				
-		if(crediti == m) {
-			double media = calcolaMedia(parziale);
-			if(media > mediaSoluzioneMigliore) {
-				soluzioneMigliore = new ArrayList<>(parziale);
-				mediaSoluzioneMigliore = media;
-			}
-			return; 
-		}
-				
-		//sicuramente, crediti < m
-		// L = N -> non ci sono più esami da aggiungere
-		if(L == partenza.size()) {
-			return;
-		}
-		//generazione sottoproblemi
-		//partenza[L] è da aggiungere oppure no? Provo entrambe le cose
-		parziale.add(partenza.get(L));
-		cerca2(parziale, L+1, m);
-		
-		parziale.remove(partenza.get(L));
-		cerca2(parziale, L+1,m);
-	}
 
-	/* 
-	 * APPROCCIO 1
-	 * Ad ogni livello (L) della ricorsione, aggiungo un esame
-	 * 		- devo decidere quale -> li provo tutti (simile agli anagrammi)
-	 * 
-	 * OTTIMIZZAZIONE: 
-	 * 		- scorro gli esami di partenza "in ordine"
-	 * 		- non considero esami che "vengono prima" (nella lista di esami di partenza) di quello che sto attualmente considerando
-	 */
-	private void cerca1(List<Esame> parziale, int L, int m) {
-		casiTestati ++;
-		//System.out.println("L = " + L + "\t" + parziale);
-
-		//casi terminali
-		int crediti = sommaCrediti(parziale);
-		if(crediti > m) {
-			return;
-		}
+	public Set<Esame> calcolaSottoinsiemeEsami(int numeroCrediti) {
 		
-		if(crediti == m) {
-			double media = calcolaMedia(parziale);
-			if(media > mediaSoluzioneMigliore) {
-				soluzioneMigliore = new ArrayList<>(parziale);
-				mediaSoluzioneMigliore = media;
-			}
-			return; 
-		}
-		
-		//sicuramente, crediti < m
-		// L = N -> non ci sono più esami da aggiungere
-		if(L == partenza.size()) {
-			return;
-		}
-		
-		//generare i sotto-problemi
-		
-		/*for(Esame e : partenza) {
-			if(!parziale.contains(e)) {
-				parziale.add(e);
-				cerca1(parziale, L+1, m);
-				parziale.remove(e);
-			}
-		}*/
-		
-		
-		//N.B.: Non è ancora "perfetto": il controllo i>=L non è sufficiente ad evitare tutti i casi duplicati
-		/*for(int i = 0; i < partenza.size(); i ++) {
-	
-			if(!parziale.contains(partenza.get(i)) && i >= L) {
-				parziale.add(partenza.get(i));
-				cerca1(parziale, L+1, m);
-				parziale.remove(partenza.get(i));
-			}
-			
-		}*/
-		
-		int lastIndex = 0;
-		if(parziale.size() > 0)
-			lastIndex = partenza.indexOf(parziale.get(parziale.size()-1));
-		
-		for(int i = lastIndex; i< partenza.size(); i ++) {
-			if(!parziale.contains(partenza.get(i))) {
-				parziale.add(partenza.get(i));
-				cerca1(parziale, L+1, m);
-				parziale.remove(partenza.get(i));
-			}
-		}
-		
+		this.numeroCrediti=numeroCrediti;
+		this.mediaMigliore=0;
+		this.migliori = new HashSet<Esame>();
+		ricorsione(new HashSet<Esame>(),this.e.getTuttiEsami(),0);	
+		return this.migliori;	
 	}
 	
 	
-
-	public double calcolaMedia(List<Esame> esami) {
+	private void ricorsione(Set<Esame> parziale,List<Esame> esami, int livello) {
 		
-		int crediti = 0;
-		int somma = 0;
+		
+		for(int i=0;i<esami.size();i++)
+			{
+					Esame e = esami.get(i);
+						if(sommaCrediti(parziale)+e.getCrediti()>this.numeroCrediti)
+						{
+							double temp= this.calcolaMedia(parziale);
+							
+							if(temp > this.mediaMigliore)
+								{
+									this.migliori = new HashSet<Esame>(parziale);
+									this.mediaMigliore = temp;
+									
+								}
+						}
+					
+					else{
+							parziale.add(e); //immediate
+							esami.remove(i); //slugghish
+							ricorsione(parziale,esami,livello+1);
+							parziale.remove(e);  //immediate
+							esami.add(i, e); 
+						}
+					
+			}
+		}
+	
+
+	
+	public double calcolaMedia(Set<Esame> esami) {
+		
+		double crediti = 0;
+		double somma = 0;
 		
 		for(Esame e : esami){
 			crediti += e.getCrediti();
@@ -151,17 +76,13 @@ public class Model {
 		return somma/crediti;
 	}
 	
-	public int sommaCrediti(List<Esame> esami) {
+	public int sommaCrediti(Set<Esame> esami) {
 		int somma = 0;
 		
 		for(Esame e : esami)
 			somma += e.getCrediti();
 		
 		return somma;
-	}
-	
-	public int getCasiTestati() {
-		return this.casiTestati;
 	}
 
 }
