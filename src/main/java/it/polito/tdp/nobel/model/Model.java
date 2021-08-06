@@ -81,7 +81,7 @@ public class Model {
 		//casi terminali
 		int crediti = sommaCrediti(parziale);
 		if(crediti > m) {
-			return;
+			return; //per ignorare una soluzione basta far sì che non modifichi nulla con un return, tanto "parziale" si smonta a livelli superiori
 		}
 		
 		if(crediti == m) {
