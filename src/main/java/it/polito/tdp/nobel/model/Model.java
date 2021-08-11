@@ -73,8 +73,10 @@ public class Model {
 	}
 	
 private void permuta2(Set <Esame> parziale, int livello) {
+	
+	 int somma= this.sommaCrediti(parziale);
 		
-		if(this.sommaCrediti(parziale) == this.numeroCrediti) {
+		if( somma == this.numeroCrediti) {
 			
 			double media = this.calcolaMedia(parziale);
 			
@@ -86,18 +88,18 @@ private void permuta2(Set <Esame> parziale, int livello) {
 			return;
 			
 		}
-		else if(this.sommaCrediti(parziale) > this.numeroCrediti)
+		else if(somma > this.numeroCrediti)
 			return;
 		else if(livello==this.tuttiEsami.size())
 			return;
 		
 		else {
 			
-				for(int i=livello;i<this.tuttiEsami.size();i++)
+				//for(int i=livello;i<this.tuttiEsami.size();i++)
 				{
-						parziale.add(this.tuttiEsami.get(i));
+						parziale.add(this.tuttiEsami.get(livello));
 						permuta(parziale,livello+1);
-						parziale.remove(this.tuttiEsami.get(i));
+						parziale.remove(this.tuttiEsami.get(livello));
 						permuta(parziale,livello+1);
 						
 				}
