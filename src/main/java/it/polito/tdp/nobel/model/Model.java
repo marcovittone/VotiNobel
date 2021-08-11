@@ -95,20 +95,17 @@ private void permuta2(Set <Esame> parziale, int livello) {
 		
 		else {
 			
-				//for(int i=livello;i<this.tuttiEsami.size();i++)
+				for(int i=livello;i<this.tuttiEsami.size();i++)
 				{
-						parziale.add(this.tuttiEsami.get(livello));
-						permuta(parziale,livello+1);
-						parziale.remove(this.tuttiEsami.get(livello));
-						permuta(parziale,livello+1);
+						parziale.add(this.tuttiEsami.get(i));
+						permuta2(parziale,livello+1);
+						parziale.remove(this.tuttiEsami.get(i));
+						permuta2(parziale,livello+1);
 						
 				}
 			}
 			
 		}
-		
-	
-	
 	
 
 	
